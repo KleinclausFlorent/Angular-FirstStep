@@ -16,13 +16,22 @@ import {RouterModule, Routes} from "@angular/router";
 import { SingleAppareilComponent } from './single-appareil/single-appareil.component';
 import { FourOhFourComponent } from './four-oh-four/four-oh-four.component';
 import {AuthGuard} from "./service/auth-guard.service";
+import {ReactiveFormsModule} from "@angular/forms";
+import { EditAppareilComponent } from './edit-appareil/edit-appareil.component';
+import {UserService} from "./service/user.service";
+import { UserListComponent } from './user-list/user-list.component';
+import { NewUserComponent } from './new-user/new-user.component';
+import { HttpClientModule } from "@angular/common/http";
 
 const appRoutes: Routes = [
   { path: 'appareils', canActivate: [AuthGuard], component: AppareilViewComponent},
   { path: 'appareils/:id', canActivate: [AuthGuard], component: SingleAppareilComponent},
+  { path: 'edit', canActivate: [AuthGuard], component: EditAppareilComponent},
   { path: 'auth', component: AuthComponent},
+  { path: 'users', component: UserListComponent},
+  { path: 'new-user', component: NewUserComponent},
   { path: 'blog', component: PostListComponentComponent},
-  { path: '', component: AppareilViewComponent},
+  { path: '', component: AuthComponent},
   { path: 'not-found', component: FourOhFourComponent},
   // { path: '**', redirectTo: 'not-found'}
 ];
@@ -37,18 +46,24 @@ const appRoutes: Routes = [
     AuthComponent,
     AppareilViewComponent,
     SingleAppareilComponent,
-    FourOhFourComponent
+    FourOhFourComponent,
+    EditAppareilComponent,
+    UserListComponent,
+    NewUserComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes),
+    HttpClientModule,
+    ReactiveFormsModule
   ],
   providers: [
     AppareilService,
     AuthService,
-    AuthGuard
+    AuthGuard,
+    UserService
   ],
   bootstrap: [AppComponent]
 })

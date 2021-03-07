@@ -1,6 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {AppareilService} from "../service/appareil.service";
 import {Subscription} from "rxjs";
+import {Appareil} from "../models/Appareil.model";
 
 @Component({
   selector: 'app-appareil-view',
@@ -9,7 +10,7 @@ import {Subscription} from "rxjs";
 })
 export class AppareilViewComponent implements OnInit, OnDestroy {
 
-  appareils: any[] = [];
+  appareils: Appareil[] = [];
   appareilSubscription : Subscription | undefined;
 
 
@@ -25,8 +26,9 @@ export class AppareilViewComponent implements OnInit, OnDestroy {
   constructor(private appareilService: AppareilService) { }
 
   ngOnInit(): void {
+    this.appareilService.getAppareilsFromServer();
     this.appareilSubscription = this.appareilService.appareilSubject.subscribe(
-      (appareils : any[]) => {
+      (appareils : Appareil[]) => {
         this.appareils = appareils;
       }
     );
@@ -42,8 +44,15 @@ export class AppareilViewComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  onSave(){
+    this.appareilService.saveAppareilsToServer();
+  }
+
+
   ngOnDestroy() {
     this.appareilSubscription?.unsubscribe();
   }
+
+
 
 }

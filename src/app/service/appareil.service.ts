@@ -1,28 +1,45 @@
 import {Subject} from "rxjs";
+import {Injectable} from "@angular/core";
+import {HttpClient} from "@angular/common/http";
+import {Appareil} from "../models/Appareil.model";
 
-
+@Injectable()
 export class AppareilService {
 
-  appareilSubject = new Subject<any>();
+  appareilSubject = new Subject<Appareil[]>();
 
-  private appareils = [
-    {
-      id: 1,
-      name: 'Machine à laver',
-      status: 'éteint'
-    },
-    {
-      id: 2,
-      name: 'Frigo',
-      status: 'allumé'
-    },
-    {
-      id: 3,
-      name: 'Ordinateur',
-      status: 'éteint'
-    }
-  ];
+  private appareils : Appareil[];
 
+  constructor(private httpClient: HttpClient) {
+    this.appareils = [];
+  }
+
+  saveAppareilsToServer(){
+    this.httpClient
+      .put('https://apprentissage-angular-default-rtdb.europe-west1.firebasedatabase.app/appareils.json', this.appareils)
+      .subscribe(
+        () => {
+          console.log('Enregistrement terminé !');
+        },
+        (error) => {
+          console.log('Erreur :' + error);
+        }
+      );
+  }
+
+  getAppareilsFromServer() {
+    this.httpClient
+      .get<Appareil[]>('https://apprentissage-angular-default-rtdb.europe-west1.firebasedatabase.app/appareils.json')
+      .subscribe(
+        (response) => {
+          this.appareils = response;
+          this.emitAppareilSubject();
+        },
+    (error) => {
+      console.log('Erreur : ' + error);
+      }
+    );
+  }
   emitAppareilSubject(){
     this.appareilSubject.next(this.appareils.slice());
   }
@@ -57,6 +74,19 @@ export class AppareilService {
       }
     );
     return appareil;
+  }
+
+  addAppareil(name: string, status:string){
+    const appareilObject = {
+      id: 0,
+      name: '',
+      status: ''
+    };
+    appareilObject.name = name;
+    appareilObject.status = status;
+    appareilObject.id = this.appareils[(this.appareils.length - 1)].id +1;
+    this.appareils.push(appareilObject);
+    this.emitAppareilSubject();
   }
 
 }
